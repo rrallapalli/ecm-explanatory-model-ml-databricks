@@ -1,4 +1,4 @@
-# BANKNIFTY Macro & Brent Interaction Modeling — Databricks Lakehouse Pipeline
+# ML-driven Explanatory Modeling - BANKNIFTY Macro & Brent Interactions — Databricks Lakehouse Pipeline
 
 This project is an end-to-end Databricks Free Edition / Unity Catalog pipeline for explaining future BANKNIFTY returns using macroeconomic drivers, lag effects, Brent crude oil interactions, model diagnostics, and a Databricks dashboard.
 
@@ -251,7 +251,7 @@ It uses dashboard datasets built from the gold tables and includes:
 
 Then import the dashboard JSON from the `dashboards/` folder.
 
-Read more details in [!How to Run][(/docs/how_to_run.md)]
+[How to Run the Project](docs/HOW_TO_RUN.md)
 
 ---
 
