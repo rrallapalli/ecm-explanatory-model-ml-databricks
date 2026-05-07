@@ -101,7 +101,7 @@ BrentReturn_lag3_x_USDINRReturn_lag1
 ---
 
 ## Lakehouse Tables
-
+### Medallion Architecture
 ![Medallion Architecture](/images/ecm_ml_explanatory_model_medallion_architecture.png)
 
 The pipeline writes the following Delta tables under:
