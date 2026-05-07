@@ -1,90 +1,114 @@
-# ML-driven Explanatory Modeling - BANKNIFTY Macro & Brent Interactions — Databricks Lakehouse Pipeline
+# 📈 ML-driven Explanatory Modeling — BANKNIFTY Macro & Brent Interactions
+### Databricks Lakehouse + Macro Modeling + Brent Transmission Analysis
 
-This project is an end-to-end Databricks Free Edition / Unity Catalog pipeline for explaining future BANKNIFTY returns using macroeconomic drivers, lag effects, Brent crude oil interactions, model diagnostics, and a Databricks dashboard.
+---
 
-The project is designed as a portfolio-ready analytics and ML case study that answers three questions:
+## 🚀 What This Project Demonstrates
+
+This project demonstrates how macroeconomic variables, lag effects, and Brent crude oil interactions can be modeled to explain future BANKNIFTY returns using the Databricks Lakehouse platform.
+
+Built on Databricks Free Edition + Unity Catalog, the project showcases:
+
+- End-to-end Medallion Architecture (Bronze → Silver → Gold)
+- PySpark feature engineering pipelines
+- Macro & lag interaction modeling
+- Brent crude transmission analysis
+- MLflow experiment tracking & model registry
+- SHAP explainability
+- Model diagnostics & residual analysis
+- Databricks AI/BI dashboards
+
+---
+
+## 🎯 Business Problem
+
+Banking indices are highly sensitive to macroeconomic conditions:
+
+- Inflation
+- Interest rates
+- Bond yields
+- Liquidity
+- Credit growth
+- Currency movements
+- Oil price shocks
+
+However, macro transmission effects are rarely instantaneous.
+
+This project answers:
 
 1. Which macro variables are associated with future BANKNIFTY performance?
-2. How well can multiple macro variables explain BANKNIFTY forward returns when modeled together?
-3. How does Brent crude interact with inflation, FX, policy rates, yields, liquidity, and credit growth?
+2. How well can macro variables explain BANKNIFTY forward returns collectively?
+3. How does Brent crude oil interact with inflation, FX, rates, and liquidity transmission?
 
 ---
-## ML in Databricks - Lakehouse Medallion Architecture 
+
+## 🧠 Key Differentiator: Brent Transmission Modeling
+
+Instead of treating Brent crude as a standalone variable, the project models:
+
+- Brent × Inflation interactions
+- Brent × FX interactions
+- Brent × Policy Rate interactions
+- Brent × Liquidity interactions
+- Lagged Brent transmission effects
+
+This creates a more realistic macro-transmission framework for explanatory modeling.
+
+---
+
+## 🧱 Architecture (Databricks Lakehouse)
+
 ![Medallion Architecture](/images/ecm_ml_explanatory_model_medallion_architecture.png)
 
-## Project Structure
+---
 
-```text
-ecm_projects/
-├── dashboards/
-│   └── Macro & Interaction Explanability.lvdash.json
-├── docs/
-│   ├── README.md
-│   └── HOW_TO_RUN.md
-└── notebooks/
-    ├── 00_config.py
-    ├── 01_ingest_bronze.py
-    ├── 02_transform_silver.py
-    ├── 03_feature_engineering_lags_interactions.py
-    ├── 04_correlation_feature_selection.py
-    ├── 05_model_training.py
-    ├── 06_explainability_shap.py
-    ├── 07_validation_summary.py
-    ├── 08_model_diagnostics.py
-    └── 09_dashboard_gold_tables.py
-```
+## 📊 Dashboard (Databricks AI/BI)
+
+The dashboard is built directly on Gold Delta tables.
+
+### Dashboard Pages
+
+### 1. Macro Drivers
+
+![Macro Drivers](/images/macro_drivers_page.jpg)
+
+### 2. Best Model
+
+![Best Model](/images/best_model_page.jpg)
+
+### 3. Model Diagnostics
+
+![Model Diagnostics](/images/model_diagnostics_page.jpg)
 
 ---
 
-## Primary Target Variable
+## 🧠 Analytical Flow
 
-```text
-BANKNIFTY_3M_Forward_Return
-```
+### 1. Macro Trend Analysis
 
-The 3-month forward return is used as the main dependent variable because macro variables, oil prices, yields, policy rates, credit growth, and liquidity usually transmit into banking equity performance with a lag rather than only on the same date.
+Analyze:
 
-Additional forward returns are also engineered for analysis:
-
-```text
-BANKNIFTY_1M_Forward_Return
-BANKNIFTY_3M_Forward_Return
-BANKNIFTY_6M_Forward_Return
-```
-
----
-
-## Feature Scope
-
-The final feature set focuses on macro and Brent transmission variables:
-
-```text
-Brent_USD_bbl
-USDINR
-India_CPI_YoY_Pct
-India_Policy_Rate_Pct
-India_10Y_GSec_Yield_Pct
-US10Y_Yield_Pct
-India_Real_GDP_YoY_Pct
-India_Bank_Credit_Growth_YoY_Pct
-India_System_Liquidity_INR_Trn
-```
-
-Excluded fields include direct index comparators, valuation ratios, and regime labels that could make the model less interpretable for the macro-transmission objective.
+- BANKNIFTY
+- Brent crude
+- USDINR
+- CPI
+- GDP
+- Policy rates
+- Bond yields
+- Credit growth
+- Liquidity
 
 ---
 
-## Feature Engineering
+### 2. Feature Engineering & Lag Modeling
 
 The pipeline creates:
 
-- BANKNIFTY forward return targets for 1M, 3M, and 6M horizons
-- Brent and USDINR log returns
-- shifted log transformation for system liquidity
-- fast-variable lags at 1M, 3M, and 6M
-- slow-variable lags at 3M, 6M, and 12M
-- direct Brent interaction terms
-- lagged Brent transmission terms
+- Forward return targets
+- Log returns
+- Lag structures
+- Brent interaction terms
+- Transmission variables
 
 Example Brent interaction features:
 
@@ -102,60 +126,17 @@ BrentReturn_lag3_x_USDINRReturn_lag1
 
 ---
 
-## Lakehouse Tables
+### 3. Explanatory Modeling
 
-The pipeline writes the following Delta tables under:
-
-```text
-workspace.banknifty_macro
-```
-
-Core tables:
-
-```text
-bronze_banknifty_macro
-silver_macro_base
-gold_macro_features
-```
-
-Modeling and explainability tables:
-
-```text
-gold_correlation_summary
-gold_high_correlation_pairs
-gold_model_comparison
-gold_model_predictions
-gold_feature_importance
-gold_brent_feature_importance
-gold_shap_feature_importance
-gold_brent_shap_importance
-```
-
-Validation and diagnostics tables:
-
-```text
-gold_validation_summary
-gold_model_diagnostics
-gold_model_metrics
-gold_residual_bias_summary
-gold_regime_diagnostics
-```
-
----
-
-## Modeling Approach
-
-The training notebook compares multiple regression models using a time-based train/test split:
+Models trained:
 
 - Ridge Regression
 - Lasso Regression
 - Random Forest Regressor
-- XGBoost Regressor, if available
+- XGBoost Regressor
 - MLP Neural Network
 
-Each model is wrapped in a scikit-learn pipeline with `StandardScaler` preprocessing.
-
-Metrics logged:
+Metrics tracked:
 
 ```text
 MAE
@@ -164,84 +145,113 @@ R²
 Directional Accuracy
 ```
 
-Models are logged with MLflow and registered to Unity Catalog using:
-
-```python
-mlflow.set_registry_uri("databricks-uc")
-registered_model_name=f"{catalog}.{schema}.{model_name}"
-```
+Models are tracked using MLflow and registered in Unity Catalog.
 
 ---
 
-## Explainability Layer
+### 4. Explainability & Diagnostics
 
-The explainability notebook uses SHAP with a Random Forest model to identify the strongest macro, lag, and Brent interaction effects.
+The project includes:
 
-Outputs include:
+- SHAP explainability
+- Residual diagnostics
+- Regime diagnostics
+- Directional accuracy analysis
+- Feature importance
+- Brent-specific importance analysis
+
+---
+
+## 🧱 Lakehouse Architecture Layers
+
+### Bronze Layer
 
 ```text
+bronze_banknifty_macro
+```
+
+- raw ingestion layer
+- Excel serial date conversion
+- raw Delta persistence
+
+### Silver Layer
+
+```text
+silver_macro_base
+```
+
+- cleaned and conformed macro dataset
+- typed columns
+- null handling
+
+### Gold Layer
+
+```text
+gold_macro_features
+gold_model_predictions
+gold_model_diagnostics
+gold_feature_importance
+gold_brent_feature_importance
 gold_shap_feature_importance
-gold_brent_shap_importance
+gold_model_metrics
 ```
+
+- feature engineering
+- model outputs
+- diagnostics
+- explainability
+- dashboard-ready analytics
 
 ---
 
-## Model Diagnostics Layer
-
-The diagnostic notebook creates dashboard-ready tables for:
-
-- actual vs predicted 3M forward returns
-- residuals and absolute error
-- over-prediction vs under-prediction bias
-- return-regime performance
-- directional accuracy
-
-Return regimes are grouped into:
+## 📂 Project Structure
 
 ```text
-Negative: below -5%
-Flat: -5% to +5%
-Positive: above +5%
+ecm_projects/
+├── dashboards/
+│   └── Macro & Interaction Explanability.lvdash.json
+│
+├── docs/
+│   ├── HOW_TO_RUN.md
+│
+└── notebooks/
+    ├── 00_config.py
+    ├── 01_ingest_bronze.py
+    ├── 02_transform_silver.py
+    ├── 03_feature_engineering_lags_interactions.py
+    ├── 04_correlation_feature_selection.py
+    ├── 05_model_training.py
+    ├── 06_explainability_shap.py
+    ├── 07_validation_summary.py
+    ├── 08_model_diagnostics.py
+    └── 09_dashboard_gold_tables.py
 ```
 
 ---
 
-## Dashboard
+## 🛠️ Tech Stack
 
-The project includes a Databricks dashboard JSON file:
+- Databricks Lakehouse
+- Unity Catalog
+- PySpark
+- Delta Tables
+- MLflow
+- SHAP
+- scikit-learn
+- XGBoost
+- Databricks AI/BI Dashboards
+
+---
+
+## ▶️ How to Run
+
+Refer:
 
 ```text
-Macro & Interaction Explanability.lvdash.json
+/docs/how_to_run.md
 ```
 
-The dashboard contains pages for:
-
-1. Macro Drivers
-   ![Macro Drivers](/images/macro_drivers_page.jpg)
-   
-2. Best Model
-   ![Best Model](/images/best_model_page.jpg)
-   
-3. Model Diagnostics
-   ![Model Diagnostics](/images/model_diagnostics_page.jpg)
-   
-It uses dashboard datasets built from the gold tables and includes:
-
-- BANKNIFTY trend
-- Brent price trend
-- FX, GDP, CPI, policy rate, yield, credit growth, and liquidity charts
-- banking-sector metrics
-- model performance counters
-- actual vs predicted returns
-- residual diagnostics
-- feature importance
-- Brent interaction importance
-- MLflow model comparison
-- feature-target correlations
-
----
-
-## Recommended Execution Order
+Recommended notebook execution order:
 
 ```text
 00_config
@@ -256,13 +266,24 @@ It uses dashboard datasets built from the gold tables and includes:
 09_dashboard_gold_tables
 ```
 
-Then import the dashboard JSON from the `dashboards/` folder.
+---
 
-[How to Run the Project](docs/how_to_run.md)
+## 💡 Key Insight
+
+> This project focuses on explainability-oriented macro modeling rather than pure price prediction — helping understand how macro transmission and Brent interactions influence banking sector performance over time.
 
 ---
 
-## Notes
+## ⚠️ Notes
 
-This is an explainability-oriented modeling project, not a trading strategy. The goal is to understand macro relationships, lag effects, Brent crude transmission, and model behavior rather than to produce investment advice. 
-The data used is synthetically generated and might have actual values for some variables, depending on the availability of public sources.
+- This is an explanatory analytics project, not investment advice.
+- The dataset is synthetic with selected macro variables aligned to public macroeconomic indicators.
+- Correlation analysis is used for exploration and screening, not as the only feature selection method.
+
+---
+
+## 📬 Contact
+
+Rakesh Rallapalli
+
+[LinkedIn](https://www.linkedin.com/in/rakesh-rallapalli/)
