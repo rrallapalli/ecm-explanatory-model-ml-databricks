@@ -245,11 +245,7 @@ ecm_projects/
 
 ## ▶️ How to Run
 
-Refer:
-
-```text
-/docs/how_to_run.md
-```
+Refer [How To Run](/docs/how_to_run.md)
 
 Recommended notebook execution order:
 
@@ -284,6 +280,7 @@ Recommended notebook execution order:
 
 ## 📬 Contact
 
-Rakesh Rallapalli
+If you're interested in discussing Data, AI, or Databricks solutions, feel free to connect.
 
-[LinkedIn](https://www.linkedin.com/in/rakesh-rallapalli/)
+Rakesh Rallapalli  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/rakesh-rallapalli/)
