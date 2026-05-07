@@ -42,6 +42,11 @@ notebooks/
 
 ## 2. Upload the source CSV
 
+The synthetic data used in this project is available at [Data](data/india_nifty_banknifty_synthetic_macro_sector_daily_with_shock_regimes (1).csv)
+
+Download this data file and upload this to workspace/banknifty_macro/volume/filestore/ as shown below:
+![Data File Upload](images/data_file_upload_location.jpeg)
+
 The current config expects the CSV at:
 
 ```text
