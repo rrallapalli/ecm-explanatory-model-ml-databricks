@@ -251,7 +251,7 @@ It uses dashboard datasets built from the gold tables and includes:
 
 Then import the dashboard JSON from the `dashboards/` folder.
 
-[How to Run the Project](docs/HOW_TO_RUN.md)
+[How to Run the Project](docs/how_to_run.md)
 
 ---
 
