@@ -1,0 +1,2325 @@
+{
+  "datasets": [
+    {
+      "name": "regime_diagnostics",
+      "displayName": "Regime Diagnostics",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_regime_diagnostics"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "model_diagnostics",
+      "displayName": "Model Diagnostics",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_model_diagnostics\n",
+        "ORDER BY\n",
+        "  Date"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "brent_feature_importance",
+      "displayName": "Brent Feature Importance",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_brent_feature_importance\n",
+        "ORDER BY\n",
+        "  importance DESC"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "brent_transmission",
+      "displayName": "Brent Transmission Story",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_brent_feature_importance\n",
+        "WHERE\n",
+        "  feature LIKE '%Brent%CPI%'\n",
+        "  OR feature LIKE '%Brent%USDINR%'\n",
+        "  OR feature LIKE '%Brent%Policy%Rate%'\n",
+        "  OR (\n",
+        "    feature LIKE '%Brent%'\n",
+        "    AND feature LIKE '%lag%'\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  importance DESC"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "model_metrics",
+      "displayName": "Model Metrics",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_model_metrics"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "feature_importance",
+      "displayName": "Feature Importance",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_feature_importance\n",
+        "ORDER BY\n",
+        "  importance DESC\n",
+        "LIMIT 20"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "residual_bias_summary",
+      "displayName": "Residual Bias Summary",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_residual_bias_summary"
+      ],
+      "catalog": "workspace",
+      "schema": "banknifty_macro"
+    },
+    {
+      "name": "mlflow_model_comparison",
+      "displayName": "MLflow Model Comparison",
+      "queryLines": [
+        "SELECT\n",
+        "  r.run_id,\n",
+        "  COALESCE(r.tags['mlflow.runName'], r.run_name) as model_name,\n",
+        "  r.start_time,\n",
+        "  r.end_time,\n",
+        "  r.status,\n",
+        "  MAX(\n",
+        "    CASE\n",
+        "      WHEN m.metric_name = 'mae' THEN m.metric_value\n",
+        "    END\n",
+        "  ) as mae,\n",
+        "  MAX(\n",
+        "    CASE\n",
+        "      WHEN m.metric_name = 'rmse' THEN m.metric_value\n",
+        "    END\n",
+        "  ) as rmse,\n",
+        "  MAX(\n",
+        "    CASE\n",
+        "      WHEN m.metric_name = 'r2' THEN m.metric_value\n",
+        "    END\n",
+        "  ) as r2,\n",
+        "  MAX(\n",
+        "    CASE\n",
+        "      WHEN m.metric_name = 'directional_accuracy' THEN m.metric_value\n",
+        "    END\n",
+        "  ) as directional_accuracy\n",
+        "FROM\n",
+        "  system.mlflow.runs_latest r\n",
+        "    LEFT JOIN system.mlflow.run_metrics_history m\n",
+        "      ON r.run_id = m.run_id\n",
+        "WHERE\n",
+        "  r.experiment_id = '2601105451353852'\n",
+        "  AND r.delete_time IS NULL\n",
+        "  AND (\n",
+        "    m.metric_name IN ('mae', 'rmse', 'r2', 'directional_accuracy')\n",
+        "    OR m.metric_name IS NULL\n",
+        "  )\n",
+        "GROUP BY\n",
+        "  r.run_id,\n",
+        "  r.run_name,\n",
+        "  r.start_time,\n",
+        "  r.end_time,\n",
+        "  r.status,\n",
+        "  r.tags\n",
+        "ORDER BY\n",
+        "  r.start_time DESC"
+      ]
+    },
+    {
+      "name": "macro_time_series",
+      "displayName": "Macro Time Series",
+      "queryLines": [
+        "SELECT\n",
+        "  Date,\n",
+        "  BANKNIFTY_Close,\n",
+        "  Brent_USD_bbl,\n",
+        "  USDINR,\n",
+        "  India_CPI_YoY_Pct,\n",
+        "  India_Policy_Rate_Pct,\n",
+        "  India_10Y_GSec_Yield_Pct,\n",
+        "  US10Y_Yield_Pct,\n",
+        "  India_Real_GDP_YoY_Pct,\n",
+        "  India_Bank_Credit_Growth_YoY_Pct,\n",
+        "  India_System_Liquidity_INR_Trn,\n",
+        "  BANKNIFTY_1M_Forward_Return,\n",
+        "  BANKNIFTY_3M_Forward_Return\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_macro_features\n",
+        "ORDER BY\n",
+        "  Date"
+      ]
+    },
+    {
+      "name": "banking_metrics_time_series",
+      "displayName": "Banking Metrics Time Series",
+      "queryLines": [
+        "SELECT\n",
+        "  Date,\n",
+        "  India_Bank_Deposit_Growth_YoY_Pct,\n",
+        "  India_CASA_Ratio_Pct,\n",
+        "  India_GNPA_Ratio_Pct,\n",
+        "  India_NNPA_Ratio_Pct,\n",
+        "  India_Bank_NIM_Pct,\n",
+        "  India_Bank_ROA_Pct,\n",
+        "  Shock_Regime,\n",
+        "  Shock_Intensity\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.bronze_banknifty_macro\n",
+        "WHERE\n",
+        "  Date IS NOT NULL\n",
+        "ORDER BY\n",
+        "  Date"
+      ]
+    },
+    {
+      "name": "brent_interactions",
+      "displayName": "Brent Interaction Terms",
+      "queryLines": [
+        "SELECT\n",
+        "  Date,\n",
+        "  BrentReturn_x_USDINR_Log_Return_1M,\n",
+        "  BrentReturn_x_India_CPI_YoY_Pct,\n",
+        "  BrentReturn_x_India_Policy_Rate_Pct,\n",
+        "  BrentReturn_x_India_10Y_GSec_Yield_Pct,\n",
+        "  BrentReturn_x_Log_System_Liquidity,\n",
+        "  BrentReturn_x_India_Bank_Credit_Growth_YoY_Pct\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_macro_features\n",
+        "ORDER BY\n",
+        "  Date"
+      ]
+    },
+    {
+      "name": "feature_correlations",
+      "displayName": "Feature Correlations",
+      "queryLines": [
+        "SELECT\n",
+        "  feature,\n",
+        "  correlation_with_target,\n",
+        "  abs_correlation\n",
+        "FROM\n",
+        "  workspace.banknifty_macro.gold_correlation_summary\n",
+        "ORDER BY\n",
+        "  abs_correlation DESC\n",
+        "LIMIT 30"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "macro_drivers",
+      "displayName": "Macro Drivers",
+      "layout": [
+        {
+          "widget": {
+            "name": "page_title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Macro Economic Drivers"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "banknifty_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "max(BANKNIFTY_Close)",
+                      "expression": "MAX(`BANKNIFTY_Close`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Latest BANKNIFTY Close",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(BANKNIFTY_Close)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    },
+                    "hideGroupSeparator": false
+                  },
+                  "displayName": "BANKNIFTY"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "banknifty_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(BANKNIFTY_Close)",
+                      "expression": "AVG(`BANKNIFTY_Close`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "BANKNIFTY Trend"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(BANKNIFTY_Close)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 1,
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "brent_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(Brent_USD_bbl)",
+                      "expression": "AVG(`Brent_USD_bbl`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Brent Oil Price"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(Brent_USD_bbl)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 44,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "usdinr_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(USDINR)",
+                      "expression": "AVG(`USDINR`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "USD/INR Exchange Rate"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(USDINR)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 44,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "gdp_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_Real_GDP_YoY_Pct)",
+                      "expression": "AVG(`India_Real_GDP_YoY_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "India Real GDP Growth"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_Real_GDP_YoY_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "cpi_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_CPI_YoY_Pct)",
+                      "expression": "AVG(`India_CPI_YoY_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "India CPI YoY %"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_CPI_YoY_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 7,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "policy_rate_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_Policy_Rate_Pct)",
+                      "expression": "AVG(`India_Policy_Rate_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "India Policy Rate"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_Policy_Rate_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "us10y_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(US10Y_Yield_Pct)",
+                      "expression": "AVG(`US10Y_Yield_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "US 10Y Treasury Yield"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(US10Y_Yield_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 17,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "india10y_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_10Y_GSec_Yield_Pct)",
+                      "expression": "AVG(`India_10Y_GSec_Yield_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "India 10Y GSec Yield"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_10Y_GSec_Yield_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "credit_growth_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_Bank_Credit_Growth_YoY_Pct)",
+                      "expression": "AVG(`India_Bank_Credit_Growth_YoY_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Bank Credit Growth"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_Bank_Credit_Growth_YoY_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 12,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "liquidity_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "macro_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_System_Liquidity_INR_Trn)",
+                      "expression": "AVG(`India_System_Liquidity_INR_Trn`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "System Liquidity"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_System_Liquidity_INR_Trn)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "banking_metrics_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Banking Sector Metrics"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 27,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "deposit_growth",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "banking_metrics_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_Bank_Deposit_Growth_YoY_Pct)",
+                      "expression": "AVG(`India_Bank_Deposit_Growth_YoY_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Bank Deposit Growth"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_Bank_Deposit_Growth_YoY_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "casa_ratio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "banking_metrics_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_CASA_Ratio_Pct)",
+                      "expression": "AVG(`India_CASA_Ratio_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "CASA Ratio"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_CASA_Ratio_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 28,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "npa_ratios",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "banking_metrics_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_GNPA_Ratio_Pct)",
+                      "expression": "AVG(`India_GNPA_Ratio_Pct`)"
+                    },
+                    {
+                      "name": "avg(India_NNPA_Ratio_Pct)",
+                      "expression": "AVG(`India_NNPA_Ratio_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "GNPA & NNPA Ratios"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fields": [
+                    {
+                      "fieldName": "avg(India_GNPA_Ratio_Pct)"
+                    },
+                    {
+                      "fieldName": "avg(India_NNPA_Ratio_Pct)"
+                    }
+                  ],
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 33,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "nim_ratio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "banking_metrics_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_Bank_NIM_Pct)",
+                      "expression": "AVG(`India_Bank_NIM_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Net Interest Margin"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_Bank_NIM_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 33,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "roa_ratio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "banking_metrics_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(India_Bank_ROA_Pct)",
+                      "expression": "AVG(`India_Bank_ROA_Pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Return on Assets"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(India_Bank_ROA_Pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 38,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "shock_intensity",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "banking_metrics_time_series",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "avg(Shock_Intensity)",
+                      "expression": "AVG(`Shock_Intensity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "frame": {
+                "showTitle": true,
+                "title": "Shock Intensity"
+              },
+              "widgetType": "combo",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "avg(Shock_Intensity)"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 38,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "interactions_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Brent Oil & Currency"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 43,
+            "width": 12,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "3bfc6378",
+      "displayName": "Best Model",
+      "layout": [
+        {
+          "widget": {
+            "name": "r2_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_metrics",
+                  "fields": [
+                    {
+                      "name": "r2",
+                      "expression": "`r2`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "R²",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "r2",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "R²"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "rmse_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_metrics",
+                  "fields": [
+                    {
+                      "name": "rmse",
+                      "expression": "`rmse`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "RMSE",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "rmse",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "RMSE"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "mae_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_metrics",
+                  "fields": [
+                    {
+                      "name": "mae",
+                      "expression": "`mae`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "MAE",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "mae",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "MAE"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "dir_acc_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_metrics",
+                  "fields": [
+                    {
+                      "name": "directional_accuracy",
+                      "expression": "`directional_accuracy`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Directional Accuracy",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "directional_accuracy",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Directional Accuracy"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "section2_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Actual vs Predicted Returns"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "actual_vs_predicted",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_diagnostics",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "Actual_3M_Forward_Return",
+                      "expression": "`Actual_3M_Forward_Return`"
+                    },
+                    {
+                      "name": "Predicted_3M_Forward_Return",
+                      "expression": "`Predicted_3M_Forward_Return`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Actual vs Predicted Returns",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "Actual_3M_Forward_Return",
+                        "displayName": "Actual"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "Predicted_3M_Forward_Return",
+                        "displayName": "Predicted"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "residual_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_diagnostics",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "Residual",
+                      "expression": "`Residual`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Residual",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "Residual",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "absolute_error_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_diagnostics",
+                  "fields": [
+                    {
+                      "name": "Date",
+                      "expression": "`Date`"
+                    },
+                    {
+                      "name": "Absolute_Error",
+                      "expression": "`Absolute_Error`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Absolute Error",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "Absolute_Error",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "section3_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Macro Driver Importance"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "top20_features",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "feature_importance",
+                  "fields": [
+                    {
+                      "name": "importance",
+                      "expression": "`importance`"
+                    },
+                    {
+                      "name": "feature",
+                      "expression": "`feature`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 20 Features",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "importance",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "feature",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "brent_features",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "brent_feature_importance",
+                  "fields": [
+                    {
+                      "name": "importance",
+                      "expression": "`importance`"
+                    },
+                    {
+                      "name": "feature",
+                      "expression": "`feature`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Brent Feature Importance",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "importance",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "feature",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 15,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "section4_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Diagnostics"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "residual_bias_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "residual_bias_summary",
+                  "fields": [
+                    {
+                      "name": "Residual_Bias",
+                      "expression": "`Residual_Bias`"
+                    },
+                    {
+                      "name": "count",
+                      "expression": "`count`"
+                    },
+                    {
+                      "name": "avg_residual",
+                      "expression": "`avg_residual`"
+                    },
+                    {
+                      "name": "avg_abs_error",
+                      "expression": "`avg_abs_error`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Residual Bias Summary",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Residual_Bias",
+                    "displayName": "Residual Bias"
+                  },
+                  {
+                    "fieldName": "count",
+                    "displayName": "Count"
+                  },
+                  {
+                    "fieldName": "avg_residual",
+                    "displayName": "Avg Residual"
+                  },
+                  {
+                    "fieldName": "avg_abs_error",
+                    "displayName": "Avg Abs Error"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 24,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "regime_diagnostics_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "regime_diagnostics",
+                  "fields": [
+                    {
+                      "name": "Actual_Return_Regime",
+                      "expression": "`Actual_Return_Regime`"
+                    },
+                    {
+                      "name": "count",
+                      "expression": "`count`"
+                    },
+                    {
+                      "name": "avg_actual_return",
+                      "expression": "`avg_actual_return`"
+                    },
+                    {
+                      "name": "avg_predicted_return",
+                      "expression": "`avg_predicted_return`"
+                    },
+                    {
+                      "name": "avg_abs_error",
+                      "expression": "`avg_abs_error`"
+                    },
+                    {
+                      "name": "directional_accuracy",
+                      "expression": "`directional_accuracy`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Regime Diagnostics",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Actual_Return_Regime",
+                    "displayName": "Return Regime"
+                  },
+                  {
+                    "fieldName": "count",
+                    "displayName": "Count"
+                  },
+                  {
+                    "fieldName": "avg_actual_return",
+                    "displayName": "Avg Actual"
+                  },
+                  {
+                    "fieldName": "avg_predicted_return",
+                    "displayName": "Avg Predicted"
+                  },
+                  {
+                    "fieldName": "avg_abs_error",
+                    "displayName": "Avg Abs Error"
+                  },
+                  {
+                    "fieldName": "directional_accuracy",
+                    "displayName": "Dir Accuracy"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 24,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "section5_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Brent Transmission Story"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 29,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "brent_transmission",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "brent_transmission",
+                  "fields": [
+                    {
+                      "name": "importance",
+                      "expression": "`importance`"
+                    },
+                    {
+                      "name": "feature",
+                      "expression": "`feature`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Brent Interaction Terms",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "importance",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "feature",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 30,
+            "width": 12,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "model_comparison",
+      "displayName": "Model Diagnostics",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Model Performance Comparison"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "metrics_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mlflow_model_comparison",
+                  "fields": [
+                    {
+                      "name": "model_name",
+                      "expression": "`model_name`"
+                    },
+                    {
+                      "name": "r2",
+                      "expression": "`r2`"
+                    },
+                    {
+                      "name": "rmse",
+                      "expression": "`rmse`"
+                    },
+                    {
+                      "name": "mae",
+                      "expression": "`mae`"
+                    },
+                    {
+                      "name": "directional_accuracy",
+                      "expression": "`directional_accuracy`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Model Metrics Comparison",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "model_name",
+                    "displayName": "Model Name"
+                  },
+                  {
+                    "fieldName": "r2",
+                    "displayName": "R²"
+                  },
+                  {
+                    "fieldName": "rmse",
+                    "displayName": "RMSE"
+                  },
+                  {
+                    "fieldName": "mae",
+                    "displayName": "MAE"
+                  },
+                  {
+                    "fieldName": "directional_accuracy",
+                    "displayName": "Directional Accuracy"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "r2_comparison",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mlflow_model_comparison",
+                  "fields": [
+                    {
+                      "name": "r2",
+                      "expression": "`r2`"
+                    },
+                    {
+                      "name": "model_name",
+                      "expression": "`model_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "R² Comparison",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "r2",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "model_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "rmse_comparison",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mlflow_model_comparison",
+                  "fields": [
+                    {
+                      "name": "rmse",
+                      "expression": "`rmse`"
+                    },
+                    {
+                      "name": "model_name",
+                      "expression": "`model_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "RMSE Comparison",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "rmse",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "model_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "mae_comparison",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mlflow_model_comparison",
+                  "fields": [
+                    {
+                      "name": "mae",
+                      "expression": "`mae`"
+                    },
+                    {
+                      "name": "model_name",
+                      "expression": "`model_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "MAE Comparison",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "mae",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "model_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "dir_acc_comparison",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mlflow_model_comparison",
+                  "fields": [
+                    {
+                      "name": "directional_accuracy",
+                      "expression": "`directional_accuracy`"
+                    },
+                    {
+                      "name": "model_name",
+                      "expression": "`model_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Directional Accuracy Comparison",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "directional_accuracy",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "model_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 11,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "e67fa511",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Feature Correlations with Target"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "359f73b0",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "feature_correlations",
+                  "fields": [
+                    {
+                      "name": "correlation_with_target",
+                      "expression": "`correlation_with_target`"
+                    },
+                    {
+                      "name": "feature",
+                      "expression": "`feature`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`feature` IS NULL OR `feature` NOT IN ('BANKNIFTY_3M_Forward_Return')"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Feature-Target Correlations",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "correlation_with_target",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "feature",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
