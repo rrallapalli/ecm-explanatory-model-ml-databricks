@@ -215,9 +215,14 @@ Macro & Interaction Explanability.lvdash.json
 The dashboard contains pages for:
 
 1. Macro Drivers
+   ![Macro Drivers](/images/macro_drivers_page.jpg)
+   
 2. Best Model
+   ![Best Model](/images/best_model_page.jpg)
+   
 3. Model Diagnostics
-
+   ![Model Diagnostics](/images/model_diagnostics_page.jpg)
+   
 It uses dashboard datasets built from the gold tables and includes:
 
 - BANKNIFTY trend
