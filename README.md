@@ -5,7 +5,9 @@
 
 ## 🚀 What This Project Demonstrates
 
-This project demonstrates how macroeconomic variables, lag effects, and Brent crude oil interactions can be modeled to explain future BANKNIFTY returns using the Databricks Lakehouse platform.
+This project showcases how financial institutions can transform raw macroeconomic and market data into explainable macro-financial intelligence using Databricks Lakehouse, Unity Catalog, MLflow, and AI/BI dashboards.
+
+How macroeconomic variables, lag effects, and Brent crude oil interactions can be modeled to explain future BANKNIFTY returns
 
 Built on Databricks Free Edition + Unity Catalog, the project showcases:
 
