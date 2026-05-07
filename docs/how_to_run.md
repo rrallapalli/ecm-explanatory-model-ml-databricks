@@ -166,7 +166,7 @@ workspace.banknifty_macro.gold_model_predictions
 workspace.banknifty_macro.gold_feature_importance
 workspace.banknifty_macro.gold_brent_feature_importance
 ```
-![ML Flow Experiments](/images/experiment_run_log.jpg)
+![ML Flow Experiments](/images/experiments_run_log.jpg)
 
 ### 06_explainability_shap
 
