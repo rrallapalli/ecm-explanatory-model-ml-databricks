@@ -9,6 +9,8 @@ The project is designed as a portfolio-ready analytics and ML case study that an
 3. How does Brent crude interact with inflation, FX, policy rates, yields, liquidity, and credit growth?
 
 ---
+## ML in Databricks - Lakehouse Medallion Architecture 
+![Medallion Architecture](/images/ecm_ml_explanatory_model_medallion_architecture.png)
 
 ## Project Structure
 
@@ -101,8 +103,6 @@ BrentReturn_lag3_x_USDINRReturn_lag1
 ---
 
 ## Lakehouse Tables
-### Medallion Architecture
-![Medallion Architecture](/images/ecm_ml_explanatory_model_medallion_architecture.png)
 
 The pipeline writes the following Delta tables under:
 
