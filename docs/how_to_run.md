@@ -193,11 +193,33 @@ Only register models that you want to preserve, compare, or serve later. For qui
 
 ## 7. Import the dashboard JSON
 
-Use the file:
+### Option A
+A Databricks dashboard JSON export is included in the `dashboard/` folder. This can be used as a reference/template to recreate the dashboard in another Databricks workspace.
 
 ```text
 dashboards/BANKNIFTY Macro Explanatory Analysis.lvdash.json
 ```
+
+Depending on the target workspace, users may need to update:
+
+- catalog and schema names  
+- dataset/table references  
+- dashboard source mappings  
+- permissions and workspace-specific IDs  
+
+### Option B
+If supported in your Databricks environment, import the dashboard JSON from:
+
+```text
+dashboards/BANKNIFTY Macro Explanatory Analysis.lvdash.json
+```
+
+After import:
+- Validate dataset mappings  
+- Update table references if needed  
+
+👉 Treat the JSON as a **template**, not a guaranteed one-click deployment.
+
 ---
 
 ## 8. Dashboard pages
@@ -248,16 +270,4 @@ Notebook `06_explainability_shap` installs SHAP using:
 Restart the Python session if Databricks asks for it after package installation.
 
 ---
-
-## 10. Recommended portfolio positioning
-
-Use this project to demonstrate:
-
-- Databricks Lakehouse pipeline design
-- Unity Catalog table management
-- macroeconomic feature engineering
-- lag and interaction modeling
-- MLflow experiment tracking and model registration
-- explainability using feature importance and SHAP
-- model diagnostics and dashboard storytelling
 
