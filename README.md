@@ -256,6 +256,28 @@ Recommended notebook execution order:
 
 ---
 
+## Recommended portfolio positioning
+
+Use this project to demonstrate:
+
+- Databricks Lakehouse pipeline design
+- Unity Catalog table management
+- macroeconomic feature engineering
+- lag and interaction modeling
+- MLflow experiment tracking and model registration
+- explainability using feature importance and SHAP
+- model diagnostics and dashboard storytelling
+
+---
+
+## Future Enhancements
+
+This project was built on Databricks Free Edition which provide limited access to some features such as Databricks Apps & Model Serving Endpoints compared to enterprise environments. Some future enhancements to potentially convert this into a end to end product are:
+
+![What's next](/images/future_enhancements_page.jpg)
+
+---
+
 ## 💡 Key Insight
 
 > This project focuses on explainability-oriented macro modeling rather than pure price prediction — helping understand how macro transmission and Brent interactions influence banking sector performance over time.
