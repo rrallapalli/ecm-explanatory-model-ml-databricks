@@ -70,17 +70,25 @@ The dashboard is built directly on Gold Delta tables.
 
 ### Dashboard Pages
 
-### 1. Macro Drivers
+### 1. Macro Time Series
 
-![Macro Drivers](/images/macro_drivers_page.jpg)
+![Macro Time Series](/images/macro_time_series_page.jpg)
 
-### 2. Best Model
+### 2. Model Performance
 
-![Best Model](/images/best_model_page.jpg)
+![Best Model](/images/model_performance_page.jpg)
 
-### 3. Model Diagnostics
+### 3. Macro & Brent Transmission Page
+
+![Macro & Brent Transmission](/images/macro_brent_transmission_page.jpg)
+
+### 4. Model Diagnostics
 
 ![Model Diagnostics](/images/model_diagnostics_page.jpg)
+
+### 5. Statistical Validity
+
+![Statistical Validity](/images/Statistical_validity_page.jpg)
 
 ---
 
@@ -168,35 +176,17 @@ The project includes:
 
 ### Bronze Layer
 
-```text
-bronze_banknifty_macro
-```
-
 - raw ingestion layer
 - Excel serial date conversion
 - raw Delta persistence
 
 ### Silver Layer
 
-```text
-silver_macro_base
-```
-
 - cleaned and conformed macro dataset
 - typed columns
 - null handling
 
 ### Gold Layer
-
-```text
-gold_macro_features
-gold_model_predictions
-gold_model_diagnostics
-gold_feature_importance
-gold_brent_feature_importance
-gold_shap_feature_importance
-gold_model_metrics
-```
 
 - feature engineering
 - model outputs
@@ -211,7 +201,7 @@ gold_model_metrics
 ```text
 ecm_projects/
 ├── dashboards/
-│   └── Macro & Interaction Explanability.lvdash.json
+│   └── BANKNIFTY Macro Explanatory Analysis.lvdash.json
 │
 ├── docs/
 │   ├── HOW_TO_RUN.md
