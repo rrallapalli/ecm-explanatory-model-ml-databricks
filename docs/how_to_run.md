@@ -123,82 +123,41 @@ Defines catalog, schema, input file path, target variable, macro features, exclu
 
 ### 01_ingest_bronze
 
-Reads the raw CSV, converts Excel serial dates to proper dates, and writes:
-
-```text
-workspace.banknifty_macro.bronze_banknifty_macro
-```
+Ingests raw BANKNIFTY macroeconomic data into the bronze Delta table using upsert mode for incremental updates.
 
 ### 02_transform_silver
 
-Selects the core macro feature set, casts numeric columns, removes nulls, and writes:
-
-```text
-workspace.banknifty_macro.silver_macro_base
-```
+Transforms bronze data into the silver macro base table with engineered features for BANKNIFTY prediction modeling.
 
 ### 03_feature_engineering_lags_interactions
 
-Creates forward returns, log returns, liquidity transformation, lag features, Brent interaction terms, and writes:
-
-```text
-workspace.banknifty_macro.gold_macro_features
-```
+Creates lag features, momentum indicators, and interaction terms from the silver macro base table to produce the final gold feature set for BANKNIFTY 3-month forward return prediction.
 
 ### 04_correlation_feature_selection
 
-Creates feature-target correlations and high-correlation feature-pair tables:
-
-```text
-workspace.banknifty_macro.gold_correlation_summary
-workspace.banknifty_macro.gold_high_correlation_pairs
-```
+Performs correlation-based exploratory analysis and initial feature screening for BANKNIFTY 3-month forward return prediction. Combines Pearson and Spearman correlations to detect both linear and monotonic relationships, identifies optimal lag structures, and flags multicollinearity issues.
 
 ### 05_model_training
 
-Trains Ridge, Lasso, Random Forest, MLP, and XGBoost if available. Logs metrics to MLflow and registers models in Unity Catalog.
+Trains and evaluates multiple regression models to predict BANKNIFTY 3-month forward log returns using engineered macro features. Implements a rigorous 5-step pipeline from feature selection through model evaluation with explicit baseline comparison.
 
-Outputs:
-
-```text
-workspace.banknifty_macro.gold_model_comparison
-workspace.banknifty_macro.gold_model_predictions
-workspace.banknifty_macro.gold_feature_importance
-workspace.banknifty_macro.gold_brent_feature_importance
-```
-![ML Flow Experiments](/images/experiments_run_log.jpg)
+![ML Flow Experiments](/images/model_experiments_page.jpg)
 
 ### 06_explainability_shap
 
-Runs SHAP explainability and writes:
-
-```text
-workspace.banknifty_macro.gold_shap_feature_importance
-workspace.banknifty_macro.gold_brent_shap_importance
-```
+Explains model predictions using SHAP (SHapley Additive exPlanations) to decompose feature contributions. Identifies which macro features, lags, and Brent interactions drive BANKNIFTY 3-month forward return predictions, and quantifies the consistency of feature importance across XGBoost and Random Forest.
 
 ### 07_validation_summary
 
-Creates basic sanity checks and writes:
-
-```text
-workspace.banknifty_macro.gold_validation_summary
-```
+End-to-end validation across bronze, silver, and gold layers to ensure data quality, pipeline consistency, and model output sanity. Performs 12+ automated checks covering null handling, feature distributions, train/test regime stability, pipeline row counts, feature engineering completeness, and prediction quality.
 
 ### 08_model_diagnostics
 
-Creates residual, error, bias, and regime diagnostics:
-
-```text
-workspace.banknifty_macro.gold_model_diagnostics
-workspace.banknifty_macro.gold_model_metrics
-workspace.banknifty_macro.gold_residual_bias_summary
-workspace.banknifty_macro.gold_regime_diagnostics
-```
+Comprehensive model diagnostics across 8 dimensions to assess prediction quality, stability, bias, and regime-specific performance. Identifies where the model excels, where it struggles, and whether prediction errors are systematic or random.
 
 ### 09_dashboard_gold_tables
 
-Displays dashboard-ready tables and provides the suggested dashboard layout.
+Centralized catalog of 20 dashboard-ready gold tables for BANKNIFTY 3-month forward return prediction model. Each table is optimized for specific visualization types and provides pre-aggregated metrics, diagnostics, and feature importance analysis for Databricks Lakeview dashboards.
 
 ---
 
@@ -208,24 +167,24 @@ The model-training notebook uses:
 
 ```python
 mlflow.set_registry_uri("databricks-uc")
-experiment_name = f"/Shared/banknifty_macro_brent_interaction"
+experiment_name = f"/Shared/banknifty_macro_3m_log_return"
 mlflow.set_experiment(experiment_name)
 ```
 
 Registered models are written to Unity Catalog using:
 
 ```python
-registered_model_name=f"{catalog}.{schema}.{model_name}"
+registered_model_name=f"{model_name}"
 ```
 
 So the registered model names will look like:
 
 ```text
-workspace.banknifty_macro.ridge_macro_lags_interactions
-workspace.banknifty_macro.lasso_feature_selection
-workspace.banknifty_macro.random_forest_macro_interaction_model
-workspace.banknifty_macro.mlp_neural_network
-workspace.banknifty_macro.xgboost_macro_interaction_model
+workspace.banknifty_macro.ridge_macro_model
+workspace.banknifty_macro.lasso_macro_model
+workspace.banknifty_macro.random_forest_macro_model
+workspace.banknifty_macro.mlp_nn_model
+workspace.banknifty_macro.xgboost_macro_model
 ```
 
 Only register models that you want to preserve, compare, or serve later. For quick experiments, logging runs without registering every model is usually enough.
@@ -237,32 +196,8 @@ Only register models that you want to preserve, compare, or serve later. For qui
 Use the file:
 
 ```text
-dashboards/Macro & Interaction Explanability.lvdash.json
+dashboards/BANKNIFTY Macro Explanatory Analysis.lvdash.json
 ```
-
-The dashboard expects these tables to exist:
-
-```text
-workspace.banknifty_macro.gold_macro_features
-workspace.banknifty_macro.bronze_banknifty_macro
-workspace.banknifty_macro.gold_model_metrics
-workspace.banknifty_macro.gold_model_diagnostics
-workspace.banknifty_macro.gold_feature_importance
-workspace.banknifty_macro.gold_brent_feature_importance
-workspace.banknifty_macro.gold_residual_bias_summary
-workspace.banknifty_macro.gold_regime_diagnostics
-workspace.banknifty_macro.gold_correlation_summary
-```
-
-It also contains an MLflow comparison dataset using system MLflow tables:
-
-```text
-system.mlflow.runs_latest
-system.mlflow.run_metrics_history
-```
-
-If the dashboard does not show MLflow model comparison, update the experiment filter inside the dashboard query to match your Databricks experiment ID.
-
 ---
 
 ## 8. Dashboard pages
@@ -270,63 +205,17 @@ If the dashboard does not show MLflow model comparison, update the experiment fi
 The included dashboard contains three pages:
 
 ```text
-Macro Drivers
-Best Model
-Model Diagnostics
-```
-
-Main dashboard sections:
-
 - Macro economic drivers
-- Banking sector metrics
-- Brent oil and currency trends
+- Model Performance
+- Macro & Brent Transmission
 - Model performance counters
-- Actual vs predicted 3M forward returns
-- Residual and absolute-error diagnostics
-- Feature importance
-- Brent transmission story
-- MLflow model comparison
-- Feature-target correlations
-
----
-
-## 9. Validation checklist
-
-After running the full pipeline, confirm that these tables exist:
-
-```sql
-SHOW TABLES IN workspace.banknifty_macro;
-```
-
-Key expected gold tables:
-
-```text
-gold_macro_features
-gold_correlation_summary
-gold_model_comparison
-gold_model_predictions
-gold_feature_importance
-gold_brent_feature_importance
-gold_model_diagnostics
-gold_model_metrics
-gold_residual_bias_summary
-gold_regime_diagnostics
-```
-
-Check the main target:
-
-```sql
-SELECT
-  COUNT(*) AS rows,
-  MIN(Date) AS start_date,
-  MAX(Date) AS end_date,
-  AVG(BANKNIFTY_3M_Forward_Return) AS avg_target
-FROM workspace.banknifty_macro.gold_macro_features;
+- Model Diagnostics
+- Statistical Validity
 ```
 
 ---
 
-## 10. Common issues
+## 9. Common issues
 
 ### File path error
 
@@ -360,7 +249,7 @@ Restart the Python session if Databricks asks for it after package installation.
 
 ---
 
-## 11. Recommended portfolio positioning
+## 10. Recommended portfolio positioning
 
 Use this project to demonstrate:
 
