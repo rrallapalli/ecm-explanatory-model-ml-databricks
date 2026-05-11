@@ -88,7 +88,7 @@ The dashboard is built directly on Gold Delta tables.
 
 ### 5. Statistical Validity
 
-![Statistical Validity](/images/Statistical_validity_page.jpg)
+![Statistical Validity](/images/statistical_validity_page.jpg)
 
 ---
 
